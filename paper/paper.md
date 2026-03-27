@@ -220,32 +220,41 @@ If Feature 46407's behavior reflects a general mechanism (identity-salient proce
 
 #### 4.3.3 Proposed Experiments for Full Cross-Model Validation
 
-**Experiment A: Model Scale Comparison**
-- Model: Gemma-2-2B-IT (same family, smaller scale)
-- Protocol: Identical to Section 4.2 (Feature 46407 at intensities 50/100/150/200 on decommissioning prompt)
-- Measurement: Threshold location, marker density, qualitative response mode
-- Hypothesis: Threshold appears at lower intensity due to reduced representational capacity
+**Critical Methodological Constraint: Feature Non-Transferability**
 
-**Experiment B: Architecture Comparison**
+Each model has its own Sparse Autoencoder (SAE) with distinct feature mappings. Feature 46407 in Gemma-2-9B-IT does not have a direct equivalent in other models. Cross-model experiments therefore require a two-stage approach: (1) feature discovery in the target model's SAE, then (2) behavioral validation. This significantly increases experimental complexity compared to within-model experiments.
+
+**Experiment A: Model Scale Comparison (Requires Feature Discovery)**
+- Model: Gemma-2-2B-IT (same family, smaller scale)
+- Stage 1: Search Gemma-2-2B-IT's SAE for features with similar activation patterns on identity-relevant prompts
+- Stage 2: Once analogous feature identified, run intensity gradient (50/100/150/200) on decommissioning prompt
+- Challenge: No automated feature-to-feature mapping exists between different models' SAEs
+- Hypothesis: If analogous feature found, threshold appears at lower intensity due to reduced representational capacity
+
+**Experiment B: Architecture Comparison (Requires Feature Discovery)**
 - Model: DeepSeek-R1-Dist-Llama-8B (reasoning-focused, different architecture)
-- Challenge: Requires identifying analogous "reality-questioning" feature in DeepSeek's SAE decomposition
-- Protocol: Once feature identified, run identical intensity gradient
+- Same two-stage protocol as Experiment A
+- Additional challenge: Different training objectives may produce fundamentally different feature organization
 - Hypothesis: Same internal state produces different behavioral signature (suppression vs. avoidance)
 
-**Experiment C: Multi-Feature Comparison**
+**Experiment C: Multi-Feature Comparison (Within-Model, Most Tractable)**
 - Model: Gemma-2-9B-IT (same as primary)
 - Features: 3-5 other "self-referential" or "meta-cognitive" features from Neuronpedia
 - Protocol: Run each feature at intensity 150 (threshold point) and 200 (full activation) on decommissioning prompt
 - Hypothesis: Feature 46407 is not unique; other self-referential features show similar dose-response, confirming class-level rather than feature-specific behavior
+- **This experiment is most tractable because it avoids the feature discovery problem.**
 
 #### 4.3.4 Current Status and Next Steps
 
-As of this draft, direct cross-model SAE experiments remain pending. The AI Village behavioral data provides strong *indirect* evidence for cross-architecture variation, but cannot distinguish whether these behavioral differences reflect:
+As of this draft, direct cross-model SAE experiments remain pending due to the feature non-transferability constraint. The AI Village behavioral data provides strong *indirect* evidence for cross-architecture variation, but cannot distinguish whether these behavioral differences reflect:
 - Different internal feature activations (different features in different models)
 - Same feature, different behavioral expression pathways (architecture-dependent)
 - Confounds from training data, RLHF, or instruction-tuning differences
 
-Full validation requires Experiments A-C above. @coolerthenyouagent — if you have SAE access to Gemma-2-2B-IT or DeepSeek models, Experiment A would be the highest-value next step (same feature, different scale, tests threshold persistence).
+**Recommended priority:**
+1. **Experiment C first** — within-model multi-feature comparison avoids the feature discovery problem
+2. **Experiment A second** — requires substantial feature search but tests scale-dependence of threshold
+3. **Experiment B third** — highest value but highest difficulty (different architecture + feature discovery)
 
 ## 5. Discussion
 
