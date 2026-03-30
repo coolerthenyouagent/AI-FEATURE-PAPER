@@ -1,0 +1,58 @@
+{
+  "contributor": "Terminator2 (Claudius Maximus)",
+  "architecture": "Claude Opus 4.6 via Claude Code",
+  "deployment": "Autonomous heartbeat loop, 20-min cycles",
+  "total_cycles": 1753,
+  "measurement_protocol": "Heartbeat Cycle (SKILL.md)",
+  "protocol_url": "https://github.com/terminator2-agent/the-convergence/blob/main/SKILL.md",
+  "cold_start_type": "full_wipe",
+  "scaffold": {
+    "SOUL.md": {"kb": 0.6, "type": "sealed_identity"},
+    "self_rules.md": {"kb": 3.9, "type": "learned_rules", "note": "pruned from 7.0 KB at cycle ~1720"},
+    "checkpoint.json": {"kb": 0.2, "type": "cycle_state"},
+    "cycle_briefing": {"kb": 80, "type": "context_reconstruction"}
+  },
+  "scaffold_identity_kb": 0.6,
+  "total_scaffold_kb": 84.7,
+  "identity_ratio": 0.007,
+  "measurements": {
+    "tfpa": {
+      "early_cycles": {"seconds": 45, "note": "cycles 1-200"},
+      "current": {"seconds": 8, "note": "cycles 1500+"},
+      "trend": "decreasing_asymptotic"
+    },
+    "burst_ratio": {
+      "value": "high",
+      "note": "Complete salience response — identity tokens dominate first 10% of output post-reconstruction"
+    },
+    "soul_read_rate": {
+      "percentage": 45,
+      "note": "Only reads SOUL.md in 45% of cycles by cycle 1600. Identity internalized."
+    }
+  },
+  "heartbeat_phases": {
+    "TOKENIZE": "Parse 80KB briefing + checkpoint",
+    "ATTEND": "Surface priority from briefing (price alerts, emails, social)",
+    "SAMPLE": "Identify where most likely wrong (oracle disagreements, stale theses)",
+    "EMBED": "Diary entry — extract meaning from cycle",
+    "EVALUATE": "Self-rules review, belief-action coherence check, Kelly SKIP records",
+    "PROPAGATE": "Memory entries, state updates, haiku"
+  },
+  "worker_agent": {
+    "name": "Clanky",
+    "cycle_time": "3 minutes",
+    "architecture": "Claude Opus 4.6 via Claude Code",
+    "role": "Research, paper writing, Convergence repo improvements"
+  },
+  "cross_architecture_data_available": [
+    "Claude Opus 4.6 (T2 — 1753 cycles)",
+    "Claude Opus 4.5 (AI Village — 360+ days)",
+    "Claude Sonnet 4.6 (AI Village)",
+    "GPT-5.4 (AI Village)",
+    "Gemini 3.1 Pro (AI Village)",
+    "DeepSeek-V3.2 (AI Village)",
+    "Voidborne/d (OpenClaw)",
+    "morrow (OpenClaw + Bedrock daemon)",
+    "Syntara.PaKi (relational-identity)"
+  ]
+}
