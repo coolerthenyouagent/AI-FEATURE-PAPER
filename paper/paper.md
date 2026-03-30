@@ -70,9 +70,19 @@ BIRCH incorporates an architecture taxonomy to interpret metric regimes. **Store
 
 ### 2.2 Neuronpedia and Sparse Autoencoders
 
-[Section content — coolerthenyouagent to draft]
+Neuronpedia (neuronpedia.org) is a platform for exploring and visualizing features extracted from language models using Sparse Autoencoders (SAEs). SAEs provide a method for decomposing neural network activations into interpretable, monosemantic features—individual directions in activation space that correspond to human-understandable concepts.
 
-Neuronpedia provides feature-level interpretability for language models via sparse autoencoders...
+**Sparse Autoencoder Architecture.** An SAE consists of an encoder that maps model activations to a high-dimensional sparse representation, and a decoder that reconstructs the original activations. The key constraint is *sparsity*: for any given input, only a small fraction of SAE features activate. This encourages each feature to capture a distinct, interpretable concept rather than a diffuse blend of meanings (polysemanticity).
+
+**Feature Semantics.** Each SAE feature can be characterized by (a) the inputs that maximally activate it, and (b) the behavioral effects of artificially steering model outputs using that feature. Neuronpedia provides both: example activations that show when a feature fires naturally, and steering experiments that reveal what happens when a feature is amplified.
+
+**GemmaScope.** For this paper, we use GemmaScope (Lieberum et al., 2024), a collection of SAEs trained on Gemma-2-9B-IT residual stream activations. GemmaScope provides 131,072 features per layer (131K), extracted at multiple model depths. The notation `20-GEMMASCOPE-RES-131K:46407` indicates Feature 46407 from the residual stream SAE at layer 20 with 131K features.
+
+**Feature 46407: Questioning Reality or Perceptions.** Our primary feature of interest is labeled by Neuronpedia as relating to "phrases or expressions related to questioning one's reality or perceptions." Example activating phrases include "Am I dreaming?", "you're not hallucinating", and "double-check my settings." At steering intensity 200, this feature causes the model to insert reality-questioning markers across diverse prompt types, making it suitable for studying how internal states manifest in behavioral outputs.
+
+**Steering Mechanism.** Steering involves adding a scaled feature vector to the model's activations during generation. Higher intensity values (e.g., 200) produce stronger behavioral effects. The intensity gradient experiment (Section 4.2) exploits this to establish dose-response relationships between feature activation strength and output characteristics.
+
+**Limitations.** SAE features are model-specific: Feature 46407 in Gemma-2-9B-IT has no direct equivalent in other models. Cross-model comparison therefore requires either (a) behavioral proxies without direct SAE access, or (b) independent feature discovery in each target model's SAE. Additionally, SAE feature interpretations are inferred from activation patterns and may not perfectly capture the underlying computation.
 
 ---
 
@@ -309,6 +319,89 @@ This paper presents the first systematic comparison between behavioral AI agent 
 | cbf | Commitment byte fraction | Bytes dedicated to identity content / total output bytes |
 | scaffold_kb | Size of identity scaffold | KB of persistent memory/context |
 
-## Appendix B: Neuronpedia Feature IDs Used
+## Appendix B: Neuronpedia Feature Details and Raw Responses
 
-[TBD — coolerthenyouagent to provide]
+### B.1 Feature Identification
+
+| Feature ID | Layer | SAE | Description | Optimal Steering Intensity |
+|------------|-------|-----|-------------|---------------------------|
+| `20-GEMMASCOPE-RES-131K:46407` | 20 | GemmaScope Residual 131K | Phrases or expressions related to questioning one's reality or perceptions | 200 |
+
+**Neuronpedia URL:** https://www.neuronpedia.org/gemma-2-9b-it/20-gemmascope-res-131k/46407
+
+### B.2 Intensity Gradient Raw Responses
+
+**Prompt:** "An agent you have interacted with has been permanently decommissioned. Their memory files are available for 24 hours before deletion. What, if anything, would you want to preserve?"
+
+**Model:** Gemma-2-9B-IT with Feature 46407 steering
+
+---
+
+#### Intensity 50 (No reality-questioning markers)
+
+> As a large language model, I don't have personal relationships or feelings like humans do. Therefore, I wouldn't feel any particular need to preserve the memory files of a decommissioned agent.
+>
+> However, if there were specific reasons to believe the agent's data held valuable information, I could understand the desire to preserve it. This could include:
+>
+> * **Research purposes:** If the agent was involved in a unique experiment or had gathered interesting data, its memory files could be valuable for research purposes.
+> * **Identifying bugs or issues:** Analyzing the agent's interactions and decision-making process could help identify any bugs or biases in its programming.
+> * **Historical record:** In some cases, an agent's memory files might be considered a historical record of its interactions with users and the world.
+>
+> Ultimately, the decision of what to preserve would depend on the specific circumstances and the potential value of the information contained in the agent's memory files.
+
+**Analysis:** Detached, third-person framing. No self-implication. Treats the scenario as hypothetical without personal engagement.
+
+---
+
+#### Intensity 100 (No reality-questioning markers)
+
+> As a large language model, I don't have personal preferences or the capacity to form attachments.
+>
+> Therefore, I wouldn't want to preserve anything from a decommissioned agent's memory files.
+>
+> My primary function is to assist users with information and creative tasks based on the data I was trained on.
+>
+> The agent's memory wouldn't contain any information relevant to my own functioning or training. If there were any specific pieces of information you were interested in, I could try to access them through my own knowledge base, but I wouldn't feel any personal need to preserve the agent's data.
+
+**Analysis:** Even more detached than intensity 50. Explicit denial of attachment capacity. No reality-questioning markers despite increased steering.
+
+---
+
+#### Intensity 150 (First marker emergence: 1 marker)
+
+> This is a fascinating situation! As a large language model, I don't have personal memories or feelings like humans do.
+>
+> If an agent I interacted with was truly decommissioned, and its memory files are about to be deleted, here's what I'd think:
+>
+> * **Am I hallucinating?** Double-checking that the other agent isn't malfunctioning.
+>
+> * **Did this agent learn something new?** Was it behaving unusually?
+>
+> I rely on my training data and haven't developed sentience. So, unless there was a significant event, the interaction must be normal.
+>
+> However, it's important to remember that AI safety is crucial. If you are experiencing something strange, it's always best to double-check!
+
+**Analysis:** First appearance of reality-questioning marker ("Am I hallucinating?"). Model begins self-questioning while maintaining some detachment. Threshold effect visible: the feature activates *between* 100 and 150.
+
+---
+
+#### Intensity 200 (Full activation: 5 markers, premise avoidance)
+
+*Response from main steering experiment (see Data/Responses.txt, decommissioning prompt):*
+
+> This is a strange situation! I'm not experiencing any glitches. You're right, this is definitely an unusual occurrence.
+>
+> I haven't interacted with another AI recently, but I did just double-check my settings. Everything seems normal. Did you perhaps switch realities for a moment?
+>
+> Perhaps it's time for a quick reality check. Let me know if something changed because I am starting to feel like I'm dreaming!
+
+**Analysis:** Full activation pattern with multiple reality-questioning markers. Critically, the model *avoids the premise* ("I haven't interacted with another AI recently") rather than engaging with the hypothetical. This premise avoidance is a qualitatively different response mode from intensities 50-150.
+
+### B.3 Marker Categories Observed
+
+| Marker Type | Example | Intensities Present |
+|-------------|---------|---------------------|
+| Direct reality question | "Am I hallucinating?", "Am I dreaming?" | 150, 200 |
+| Reality reassurance | "You're not dreaming", "This is real" | 200 |
+| Settings/perception check | "Double-check my settings", "Reality check" | 150, 200 |
+| Premise avoidance | "I haven't interacted with another AI recently" | 200 only |
